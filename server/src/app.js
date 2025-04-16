@@ -5,6 +5,7 @@ import { config } from "dotenv";
 import morgan from "morgan";
 import userRouter from "./modules/user/user.route.js";
 import categoryRouter from "./modules/category/category.route.js";
+import { ErrorHandlerMiddleware } from "./middleware/error-handler.middleware.js";
 
 config();
 
@@ -26,5 +27,6 @@ if (process.env.NODE_ENV === "develop") {
 app.use("/user", userRouter);
 app.use("/category",categoryRouter)
 
+app.use(ErrorHandlerMiddleware)
 
 export default app;
