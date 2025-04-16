@@ -1,21 +1,30 @@
 import express from "express";
-import cors from "cors"
+import cookieParser from 'cookie-parser';
+import cors from "cors";
 import { config } from "dotenv";
-import morgan from "morgan"
+import morgan from "morgan";
+import userRouter from "./modules/user/user.route.js";
+import categoryRouter from "./modules/category/category.route.js";
 
-config()
+config();
 
-const app=express();
+const app = express();
 
-app.use(express.json())
-app.use(express.urlencoded({extended:true}))
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use(cookieParser());
 
 app.use(cors({
-    origin:"*"
-}))
+     origin: "*" 
+}));
 
-if (process.env.NODE_ENV=="develop") {
-    app.use(morgan("tiny"))
+if (process.env.NODE_ENV === "develop") {    
+    app.use(morgan("tiny"));
 }
 
-export default app
+app.use("/user", userRouter);
+app.use("/category",categoryRouter)
+
+
+export default app;
