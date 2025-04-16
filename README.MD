@@ -44,6 +44,7 @@ STI (Sifatli,Tezkor,Ishonchli) Shop — foydalanuvchilarga mahsulotlarni buyurtm
 | name         | String      | Foydalanuvchi ismi            |
 | email        | String      | Email manzili                 |
 | password     | String      | Shifrlangan parol             |
+| role         | ENUM        | 'Manager', 'Admin', 'User'    |
 | balance      | DECIMAL     | Foydalanuvchi balansi         |
 | income       | DECIMAL     | Daromadi                      |
 | created_at   | TIMESTAMP   | Yaratilgan vaqt               |
