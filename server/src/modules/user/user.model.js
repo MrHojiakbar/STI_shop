@@ -16,6 +16,9 @@ const UserSchema=mongoose.Schema(
             type:mongoose.SchemaTypes.String,
             required:true
         },
+        imageUrl:{
+            type:mongoose.SchemaTypes.String
+        },
         role:{
             type:mongoose.SchemaTypes.String, 
             enum:["USER","ADMIN","MANAGER"],
@@ -37,6 +40,6 @@ const UserSchema=mongoose.Schema(
     }
 )
 
-const User = mongoose.model("User", UserSchema);
+const User = mongoose.model("users", UserSchema);
 
 export default User;

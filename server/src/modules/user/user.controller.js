@@ -20,104 +20,129 @@ export const getUserById = async (req, res) => {
 };
 
 
-export const register = async (req, res) => {
-  const { error, value } = registerSchema.validate(req.body);
-  console.log(error,value);
-  
-  if (error) {
-    throw new BaseException(error.message,400);
-    
-  }
-  const newUser = await userService.registerUser(req.body);
-  const payload={ role: newUser.role, id: newUser.id }
-  
-  const accessToken = jwt.sign(
-    payload,
-    ACCESS_TOKEN_SECRET,
-    {
-      expiresIn: ACCES_TOKEN_EXPIRE_TIME,
-    }
-  );
-  const refreshToken = jwt.sign(
-    payload,
-    REFRESH_TOKEN_SECRET,
-    {
-      expiresIn: REFRESH_TOKEN_EXPIRE_TIME,
-    }
-  );
-  res.cookie("accessToken", accessToken, {
-    maxAge: +ACCES_TOKEN_EXPIRE_TIME * 1000,
-    httpOnly: true,
-  });
+export const register = async (req, res,next) => {
+  try {
+    const { error, value } = registerSchema.validate(req.body);
+    const file = req.file;
+    const imageUrl=`/uploads/${file.mimetype.split("/")[0]}/${file.filename}`
 
-  res.cookie("refreshToken", refreshToken, {
-    maxAge: +REFRESH_TOKEN_EXPIRE_TIME * 1000,
-    httpOnly: true,
-  });
   
-  res.cookie("user", JSON.stringify(newUser));
-  const data={newUser,tokens:{accessToken,refreshToken}}
-  res.status(201).send({
-    message: "Yaratildi",
-    data: newUser,
-  });
+    
+    if (error) {
+      throw new BaseException(error.message,400);
+      
+    }
+    const {name,email,password}=req.body
+    const newUser = await userService.registerUser({name,email,password,imageUrl});
+    const payload={ role: newUser.role, id: newUser.id }
+    
+    const accessToken = jwt.sign(
+      payload,
+      ACCESS_TOKEN_SECRET,
+      {
+        expiresIn: ACCES_TOKEN_EXPIRE_TIME,
+      }
+    );
+    const refreshToken = jwt.sign(
+      payload,
+      REFRESH_TOKEN_SECRET,
+      {
+        expiresIn: REFRESH_TOKEN_EXPIRE_TIME,
+      }
+    );
+    res.cookie("accessToken", accessToken, {
+      maxAge: +ACCES_TOKEN_EXPIRE_TIME * 1000,
+      httpOnly: true,
+    });
+  
+    res.cookie("refreshToken", refreshToken, {
+      maxAge: +REFRESH_TOKEN_EXPIRE_TIME * 1000,
+      httpOnly: true,
+    });
+    
+    res.cookie("user", JSON.stringify(newUser));
+    const data={newUser,tokens:{accessToken,refreshToken}}
+    res.status(201).send({
+      message: "Yaratildi",
+      data: data,
+    });
+  } catch (err) {
+    next(err)
+  }
 };
 
-export const login=async (req,res) => {
-  const {error,value}=loginSchema.validate(req.body)
+export const login=async (req,res, next) => {
+  try {
+    const {error,value}=loginSchema.validate(req.body)
 
-  if (error) {
-    throw new BaseException(error.message,400);
+    if (error) {
+      throw new BaseException(error.message,400);
+    }
+  
+    const user=await userService.loginUser(req.body)
+  
+    const accessToken = jwt.sign(
+      { role: user.role, id: user.id },
+       ACCESS_TOKEN_SECRET,
+      {
+        expiresIn: +ACCES_TOKEN_EXPIRE_TIME,
+      }
+    );
+    const refreshToken = jwt.sign(
+      { role: user.role, id: user.id },
+      REFRESH_TOKEN_SECRET,
+      {
+        expiresIn: +REFRESH_TOKEN_EXPIRE_TIME,
+      }
+    );
+    
+    res.cookie("accessToken", accessToken, {
+      maxAge: +ACCES_TOKEN_EXPIRE_TIME * 1000,
+      httpOnly: true,
+    });
+  
+    res.cookie("refreshToken", refreshToken, {
+      maxAge: +REFRESH_TOKEN_EXPIRE_TIME * 1000,
+      httpOnly: true,
+    });
+  
+    const data={user,tokens:{accessToken,refreshToken}}
+  
+    res.cookie("user", JSON.stringify(user));
+    res.send({
+      message: "success",
+      data: data,
+    })
+  } catch (err) {
+    next(err)
   }
-
-  const user=await userService.loginUser(req.body)
-
-  const accessToken = jwt.sign(
-    { role: user.role, id: user.id },
-    ACCESS_TOKEN_SECRET,
-    {
-      expiresIn: ACCES_TOKEN_EXPIRE_TIME,
-    }
-  );
-  const refreshToken = jwt.sign(
-    { role: user.role, id: user.id },
-    REFRESH_TOKEN_SECRET,
-    {
-      expiresIn: REFRESH_TOKEN_EXPIRE_TIME,
-    }
-  );
-
-  res.cookie("accessToken", accessToken, {
-    maxAge: +ACCES_TOKEN_EXPIRE_TIME * 1000,
-    httpOnly: true,
-  });
-
-  res.cookie("refreshToken", refreshToken, {
-    maxAge: +REFRESH_TOKEN_EXPIRE_TIME * 1000,
-    httpOnly: true,
-  });
-
-  const data={user,tokens:{accessToken,refreshToken}}
-
-  res.cookie("user", JSON.stringify(user));
-  res.send({
-    message: "success",
-    data: user,
-  })
 }
 
-export const deleteUser = async (req, res) => {
-  const id = req.params.id; 
-  const user = await userService.deleteUserById(id);
-  res.send(user);
+export const deleteUser = async (req, res, next) => {
+  try {
+    const id = req.params.id; 
+    const user = await userService.deleteUserById(id);
+    res.send(user);
+  } catch (err) {
+    next(err)
+  }
+
 };
 
-export const updateUser=async (req,res) => {
-  const id = req.params.id; 
-  const {email,name,balance,income}=req.body
-  const user = await userService.updateUserById(id,{email,name,balance,income});
-  res.send({
-    message:"succes",
-    updatedUser:user
-  });
+export const updateUser=async (req,res, next) => {
+  try {
+    const id = req.params.id; 
+    const {email,name,balance,income}=req.body
+    const user = await userService.updateUserById(id,{email,name,balance,income});
+    if (!user) {
+      throw new BaseException("User not found",409)
+    }
+    res.send({
+      message:"succes",
+      updatedUser:user
+    });
+  } catch (err) {
+    next(err)
+  }
+  
 }

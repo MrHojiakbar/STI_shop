@@ -14,7 +14,7 @@ class UserService {
     return findUser
   }
 
-  async registerUser({name, email, password}) {
+  async registerUser({name, email, password,imageUrl}) {
     const findUser = await this.userModel.findOne({ email });
     if (findUser) {
       throw new BaseException("Siz ro'yhatdan o'tib bo'lgansiz", 409);
@@ -24,6 +24,7 @@ class UserService {
       name,
       email,
       password: passwordHash,
+      imageUrl
     });
     return newUser
   }

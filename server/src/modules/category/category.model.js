@@ -14,6 +14,6 @@ const CategorySchema=mongoose.Schema(
         versionKey: false
     }
 )
-const Category=mongoose.model("Category",CategorySchema)
+const Category=mongoose.model("categories",CategorySchema)
 
 export default Category
