@@ -6,6 +6,7 @@ import {
   REFRESH_TOKEN_EXPIRE_TIME,
 } from "../configs/jwt.config.js";
 import { BaseException } from "../errors/base.error.js";
+import { isValidObjectId } from "mongoose";
 
 export const Protected = (isProtected) => {
   return (req, res, next) => {
@@ -17,7 +18,6 @@ export const Protected = (isProtected) => {
     
     const accessToken = req.cookies.accessToken;
     const refreshToken = req.cookies.refreshToken;
-    
     if (!accessToken && !refreshToken) {
       return res.redirect("/user/login");
     }

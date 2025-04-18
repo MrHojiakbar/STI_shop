@@ -29,6 +29,7 @@ export const ProductById = async (req, res, next) => {
 
 export const createProduct = async (req, res, next) => {
   try {
+    
     const {name,description,price,quantity,category_id,user_id} = req.body;
     const file = req.file;
     const imageUrl=`/uploads/${file.mimetype.split("/")[0]}/${file.filename}`
