@@ -7,6 +7,7 @@ import userRouter from "./modules/user/user.route.js";
 import categoryRouter from "./modules/category/category.route.js";
 import { ErrorHandlerMiddleware } from "./middleware/error-handler.middleware.js";
 import productRouter from "./modules/product/product.route.js";
+import orderRouter from "./modules/order/order.route.js";
 
 config();
 
@@ -28,9 +29,11 @@ if (process.env.NODE_ENV === "develop") {
 app.use("/user", userRouter);
 app.use("/category",categoryRouter)
 app.use("/product",productRouter)
+app.use("/order",orderRouter)
+app.use("/orderItem",orderRouter)
 
 
-app.use((_, res, __) => {
+app.use((_, res, __) => { 
     res.send("404");
   });
 

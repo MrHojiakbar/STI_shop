@@ -25,11 +25,11 @@ const UserSchema=mongoose.Schema(
             default:"USER"
         },
         balance:{
-            type:mongoose.SchemaTypes.Decimal128,
+            type:Number,
             default:0
         },
         income:{
-            type:mongoose.SchemaTypes.Decimal128,
+            type:Number,
             default:0
         },
     },

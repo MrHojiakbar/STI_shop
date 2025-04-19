@@ -6,6 +6,13 @@ class UserService {
   constructor() {
     this.userModel = User;
   }
+  async getAllUsers(id) {
+    const findUser=await this.userModel.find()
+    if (!findUser) {
+        throw new BaseException("User not found", 409);
+    }
+    return findUser
+  }
   async findUserById(id) {
     const findUser=await this.userModel.findById(id)
     if (!findUser) {
@@ -41,7 +48,10 @@ class UserService {
   }
 
   async deleteUserById(id) {
+    console.log(id);
+    
     const findUser=await this.userModel.findOneAndDelete(id);
+    console.log(findUser);
     if (!findUser) {
         throw new BaseException("User hali ro'yhatdan o'tmagan", 409);
     }

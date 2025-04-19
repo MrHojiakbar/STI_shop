@@ -1,4 +1,4 @@
-import { registerSchema } from "../dtos/register.schema.js";
+import { registerSchema,loginSchema, updateUserSchema } from "./dtos/user.schema.js";
 import jwt from "jsonwebtoken";
 import userService from "./user.service.js";
 import {
@@ -8,7 +8,15 @@ import {
     REFRESH_TOKEN_SECRET,
   } from "../../configs/jwt.config.js";
 import { BaseException } from "../../errors/base.error.js";
-import { loginSchema } from "../dtos/login.schema.js";
+import { isValidObjectId } from "mongoose";
+
+export const AllUsers = async (req, res) => {
+  const user = await userService.getAllUsers();
+  res.send({
+    message:"success",
+    data:user
+});
+};
 
 export const getUserById = async (req, res) => {
   const id = req.params.id;
@@ -23,15 +31,18 @@ export const getUserById = async (req, res) => {
 export const register = async (req, res,next) => {
   try {
     const { error, value } = registerSchema.validate(req.body);
-    const file = req.file;
-    const imageUrl=`/uploads/${file.mimetype.split("/")[0]}/${file.filename}`
-
-  
-    
     if (error) {
       throw new BaseException(error.message,400);
       
     }
+    const file = req.file;
+    let imageUrl=`/uploads/default.jpeg`
+    if (file) {
+      imageUrl=`/uploads/${file.mimetype.split("/")[0]}/${file.filename}`
+    }
+
+  
+    
     const {name,email,password}=req.body
     const newUser = await userService.registerUser({name,email,password,imageUrl});
     const payload={ role: newUser.role, id: newUser.id }
@@ -121,6 +132,10 @@ export const login=async (req,res, next) => {
 export const deleteUser = async (req, res, next) => {
   try {
     const id = req.params.id; 
+    
+    if (!isValidObjectId(id)) {
+      throw new BaseException("id is not valid",400);
+    }
     const user = await userService.deleteUserById(id);
     res.send(user);
   } catch (err) {
@@ -131,7 +146,14 @@ export const deleteUser = async (req, res, next) => {
 
 export const updateUser=async (req,res, next) => {
   try {
+    const {error,value}=updateUserSchema.validate(req.body)
+    if (error) {
+      throw new BaseException(error.message,400);
+    }
     const id = req.params.id; 
+    if (!isValidObjectId(id)) {
+      throw new BaseException("id is not valid",400);
+    }
     const {email,name,balance,income}=req.body
     const user = await userService.updateUserById(id,{email,name,balance,income});
     if (!user) {

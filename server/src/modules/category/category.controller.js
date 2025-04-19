@@ -1,4 +1,6 @@
 import categoryService from "./category.service.js";
+import { createCategorySchema, updateCategorySchema } from "./dtos/category.schema.js";
+import {isValidObjectId} from "mongoose"
 
 export const AllCategories = async (req, res, next) => {
   try {
@@ -16,6 +18,9 @@ export const AllCategories = async (req, res, next) => {
 export const CategorieById = async (req, res, next) => {
   try {
     const id = req.params.id;
+    if (!isValidObjectId(id)) {
+      throw new BaseException("id is not valid",400);
+    }
     const category = await categoryService.getCategoryById(id);
     res.send({
       message: "success",
@@ -29,6 +34,11 @@ export const CategorieById = async (req, res, next) => {
 
 export const createCategory = async (req, res, next) => {
   try {
+    const {error,value}=createCategorySchema.validate(req.body)
+    if (error) {
+      throw new BaseException(error.message,400);
+      
+    }
     const {name} = req.body;
     const category = await categoryService.createCategory(name);
     res.send({
@@ -42,7 +52,15 @@ export const createCategory = async (req, res, next) => {
 };
 export const updateCategory = async (req, res, next) => {
   try {
+    const {error,value}=updateCategorySchema.validate(req.body)
+    if (error) {
+      throw new BaseException(error.message,400);
+      
+    }
     const id = req.params.id;
+    if (!isValidObjectId(id)) {
+      throw new BaseException("id is not valid",400);
+    }
     const {name} = req.body;
     
     const category = await categoryService.updateCategoryById(id,name);
@@ -58,6 +76,9 @@ export const updateCategory = async (req, res, next) => {
 export const deleteCategory = async (req, res, next) => {
   try {
     const id = req.params.id;
+    if (!isValidObjectId(id)) {
+      throw new BaseException("id is not valid",400);
+    }
     const category = await categoryService.deleteCategoryById(id);
     res.send({
       message: "success",

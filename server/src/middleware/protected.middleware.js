@@ -16,8 +16,8 @@ export const Protected = (isProtected) => {
       return next();
     }
     
-    const accessToken = req.cookies.accessToken;
-    const refreshToken = req.cookies.refreshToken;
+    let accessToken = req.cookies.accessToken;
+    let refreshToken = req.cookies.refreshToken;
     if (!accessToken && !refreshToken) {
       return res.redirect("/user/login");
     }
@@ -27,32 +27,35 @@ export const Protected = (isProtected) => {
         const { role, id } = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET);
         const payload = { role, id };
 
-        const newAccessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET, {
+        accessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET, {
           expiresIn: ACCES_TOKEN_EXPIRE_TIME,
         });
-        const newRefreshToken = jwt.sign(payload, REFRESH_TOKEN_SECRET, {
+        refreshToken = jwt.sign(payload, REFRESH_TOKEN_SECRET, {
           expiresIn: REFRESH_TOKEN_EXPIRE_TIME,
         });
 
-        res.cookie("accessToken", newAccessToken, {
+        res.cookie("accessToken", accessToken, {
           maxAge: +ACCES_TOKEN_EXPIRE_TIME * 1000,
           httpOnly: true,
         });
 
-        res.cookie("refreshToken", newRefreshToken, {
+        res.cookie("refreshToken", refreshToken, {
           maxAge: +REFRESH_TOKEN_EXPIRE_TIME * 1000,
           httpOnly: true,
         });
 
         const data = { id, role };
         res.cookie("user", JSON.stringify(data));
-
+        return next();
       } catch (err) {
+        console.log(err);
+        
         return next(new BaseException("Refresh token notogri", 401));
       }
     }
 
     try {
+      
       const decodedData = jwt.verify(accessToken, ACCESS_TOKEN_SECRET);
 
       req.role = decodedData.role;
@@ -60,6 +63,34 @@ export const Protected = (isProtected) => {
       next();
     } catch (err) {
       if (err instanceof jwt.TokenExpiredError) {
+        try {
+          if (refreshToken) {
+            const { role, id } = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET);
+            const payload = { role, id };
+
+            accessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET, {
+              expiresIn: ACCES_TOKEN_EXPIRE_TIME,
+            });
+            refreshToken = jwt.sign(payload, REFRESH_TOKEN_SECRET, {
+              expiresIn: REFRESH_TOKEN_EXPIRE_TIME,
+            });
+
+            res.cookie("accessToken", accessToken, {
+              maxAge: +ACCES_TOKEN_EXPIRE_TIME * 1000,
+              httpOnly: true,
+            });
+
+            res.cookie("refreshToken", refreshToken, {
+              maxAge: +REFRESH_TOKEN_EXPIRE_TIME * 1000,
+              httpOnly: true, 
+            });
+            const data = { id, role };
+            res.cookie("user", JSON.stringify(data));
+            return next();
+          }
+        } catch (err) {
+          next(err)
+        }
         return next(new BaseException("Token muddati eskirgan", 406));
       } else if (err instanceof jwt.JsonWebTokenError) {
         return next(
