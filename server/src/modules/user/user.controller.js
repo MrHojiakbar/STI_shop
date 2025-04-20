@@ -9,6 +9,9 @@ import {
   } from "../../configs/jwt.config.js";
 import { BaseException } from "../../errors/base.error.js";
 import { isValidObjectId } from "mongoose";
+import { config } from "dotenv";
+
+config();
 
 export const AllUsers = async (req, res) => {
   const user = await userService.getAllUsers();
@@ -36,10 +39,10 @@ export const register = async (req, res,next) => {
       
     }
     const file = req.file;
-    let imageUrl=`/uploads/default.jpeg`
+    let imageUrl=`/uploads/image/default.png`
     if (file) {
       imageUrl=`/uploads/${file.mimetype.split("/")[0]}/${file.filename}`
-    }
+    } 
 
   
     
@@ -63,15 +66,22 @@ export const register = async (req, res,next) => {
     );
     res.cookie("accessToken", accessToken, {
       maxAge: +ACCES_TOKEN_EXPIRE_TIME * 1000,
-      httpOnly: true,
+      httpOnly: false,
+      sameSite: "Lax",
+      secure: process.env.NODE_ENV === "production"
     });
   
     res.cookie("refreshToken", refreshToken, {
       maxAge: +REFRESH_TOKEN_EXPIRE_TIME * 1000,
-      httpOnly: true,
+      httpOnly: false,
+      sameSite: "Lax",
+      secure: process.env.NODE_ENV === "production"
     });
     
-    res.cookie("user", JSON.stringify(newUser));
+    res.cookie("user", JSON.stringify(newUser),{
+      sameSite: "Lax",
+      secure: process.env.NODE_ENV === "production"
+    });
     const data={newUser,tokens:{accessToken,refreshToken}}
     res.status(201).send({
       message: "Yaratildi",
@@ -109,17 +119,24 @@ export const login=async (req,res, next) => {
     
     res.cookie("accessToken", accessToken, {
       maxAge: +ACCES_TOKEN_EXPIRE_TIME * 1000,
-      httpOnly: true,
+      httpOnly: false,
+      sameSite: "Lax",
+      secure: process.env.NODE_ENV === "production"
     });
   
     res.cookie("refreshToken", refreshToken, {
       maxAge: +REFRESH_TOKEN_EXPIRE_TIME * 1000,
-      httpOnly: true,
+      httpOnly: false,
+      sameSite: "Lax",
+      secure: process.env.NODE_ENV === "production"
     });
   
     const data={user,tokens:{accessToken,refreshToken}}
   
-    res.cookie("user", JSON.stringify(user));
+    res.cookie("user", JSON.stringify(user),{
+      sameSite: "Lax",
+      secure: process.env.NODE_ENV === "production"
+    });
     res.send({
       message: "success",
       data: data,

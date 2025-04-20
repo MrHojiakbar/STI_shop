@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <!-- Design by foolishdeveloper.com -->
-    <title>Login</title>
+    <title>Register</title>
 
     <link rel="preconnect" href="https://fonts.gstatic.com" />
     <link
@@ -47,15 +47,15 @@
       .shape:last-child {
         background: linear-gradient(to right, #ff512f, #f09819);
         right: -30px;
-        bottom: -80px;
+        bottom: -140px;
       }
       form {
-        height: 520px;
+        height: 620px;
         width: 400px;
         background-color: rgba(255, 255, 255, 0.13);
         position: absolute;
         transform: translate(-50%, -50%);
-        top: 50%;
+        top: 50%;   
         left: 50%;
         border-radius: 10px;
         backdrop-filter: blur(10px);
@@ -128,6 +128,9 @@
         text-decoration: none;
         margin-left: 100px;
       }
+      .social i {
+        margin-right: 4px;
+      }
     </style>
   </head>
   <body>
@@ -135,8 +138,12 @@
       <div class="shape"></div>
       <div class="shape"></div>
     </div>
-    <form id="loginForm">
-      <h3>Login Here</h3>
+    <form>
+      <h3>Register Here</h3>
+    
+
+      <label for="name">Name</label>
+      <input type="text" placeholder="Name" id="name" name="name" />
 
       <label for="email">Email</label>
       <input type="email" placeholder="Email" id="email" name="email" />
@@ -176,13 +183,13 @@
         ></i>
       </div>
 
-      <button type="submit">Log In</button>
+      <button type="submit">Register</button>
       <div class="social">
-        <a href="./register.html"><div class="go">For Register</div></a>
+        <a href="./login.html"><div class="go">For Login</div></a>
       </div>
     </form>
 
-    <script type="module" src="/src/js/login.js"></script>
+    <script src="../js/register.js">
       
     </script>
   </body>

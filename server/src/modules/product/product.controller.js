@@ -36,8 +36,11 @@ export const createProduct = async (req, res, next) => {
     if (error) {
       throw new BaseException(error.message, 400);
     }
-    const { name, description, price, quantity, category_id, user_id } =
+    const { name, description, price, quantity, category_id} =
       req.body;
+      console.log(req.user);
+      
+    const user_id= req.user.id;
     const file = req.file;
     const imageUrl = `/uploads/${file.mimetype.split("/")[0]}/${file.filename}`;
     const data = {

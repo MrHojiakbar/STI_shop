@@ -1,0 +1,62 @@
+body::before {
+    content: "";
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    top: 50px;
+    left: 50px;
+    filter: blur(60px);
+  }
+
+  body {
+    background-color: white;
+    min-height: 100vh;
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+  }
+  .navbar{
+    background-color: #302cff;
+  }
+  .userInfo{
+    height: 70px;
+    padding: 10px;
+    background-color: white;
+    border-radius: 10px;
+  }
+  .userInfo h5{
+    margin-right: 40px;
+  }
+
+  .card:hover {
+    transform: scale(1.02);
+    transition: 0.2s;
+  }
+.stiLOGO {
+height: 80px; 
+width: auto;
+object-fit: contain;
+}
+
+.navbar {
+    background-color: #302cff;
+    height: 80px;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    align-items: center;
+    display: flex; /* Flexboxni faollashtirish */
+    justify-content: space-between; /* Navbar elementlari orasida bo'sh joy */
+  }
+  
+  .search {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1; /* Formani o'rtaga joylashtirish uchun */
+  }
+  
+  .search input, .search button {
+    max-width: 400px; /* Kerakli o'lchamni belgilash */
+  }
+  

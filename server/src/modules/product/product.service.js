@@ -17,11 +17,8 @@ class ProductService{
         return findProduct
     }
     async createProduct(data) {
-        const id=data.id
-        const findProduct=await this.productModel.findOne({id})
-        if (findProduct) {
-            throw new BaseException('Product already exsists', 409);
-        }
+        console.log(data);
+        
         const newProduct = await this.productModel.create(data)
         return newProduct
     }

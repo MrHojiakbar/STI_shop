@@ -6,7 +6,6 @@ import {
   REFRESH_TOKEN_EXPIRE_TIME,
 } from "../configs/jwt.config.js";
 import { BaseException } from "../errors/base.error.js";
-import { isValidObjectId } from "mongoose";
 
 export const Protected = (isProtected) => {
   return (req, res, next) => {
@@ -22,6 +21,7 @@ export const Protected = (isProtected) => {
       return res.redirect("/user/login");
     }
     
+    console.log("protected");
     if (!accessToken && refreshToken) {
       try {
         const { role, id } = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET);
@@ -36,17 +36,24 @@ export const Protected = (isProtected) => {
 
         res.cookie("accessToken", accessToken, {
           maxAge: +ACCES_TOKEN_EXPIRE_TIME * 1000,
-          httpOnly: true,
+          httpOnly: false,
+          sameSite: "Lax",
+          secure: process.env.NODE_ENV === "production"
         });
 
         res.cookie("refreshToken", refreshToken, {
           maxAge: +REFRESH_TOKEN_EXPIRE_TIME * 1000,
-          httpOnly: true,
+          httpOnly: false,
+          sameSite: "Lax",
+          secure: process.env.NODE_ENV === "production"
         });
 
         const data = { id, role };
-        res.cookie("user", JSON.stringify(data));
-        return next();
+        res.cookie("user", JSON.stringify(data),{
+          sameSite: "Lax",
+          secure: process.env.NODE_ENV === "production"
+        });
+        
       } catch (err) {
         console.log(err);
         
@@ -57,7 +64,8 @@ export const Protected = (isProtected) => {
     try {
       
       const decodedData = jwt.verify(accessToken, ACCESS_TOKEN_SECRET);
-
+      console.log("protected middleware", decodedData);
+      
       req.role = decodedData.role;
       req.user = decodedData; 
       next();
@@ -77,15 +85,22 @@ export const Protected = (isProtected) => {
 
             res.cookie("accessToken", accessToken, {
               maxAge: +ACCES_TOKEN_EXPIRE_TIME * 1000,
-              httpOnly: true,
+              httpOnly: false,
+              sameSite: "Lax",
+              secure: process.env.NODE_ENV === "production"
             });
 
             res.cookie("refreshToken", refreshToken, {
               maxAge: +REFRESH_TOKEN_EXPIRE_TIME * 1000,
-              httpOnly: true, 
+              httpOnly: false, 
+              sameSite: "Lax",
+              secure: process.env.NODE_ENV === "production"
             });
             const data = { id, role };
-            res.cookie("user", JSON.stringify(data));
+            res.cookie("user", JSON.stringify(data),{
+              sameSite: "Lax",
+              secure: process.env.NODE_ENV === "production"
+            });
             return next();
           }
         } catch (err) {
