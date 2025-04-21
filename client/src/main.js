@@ -75,13 +75,16 @@ customAxios.get('/category/')
       const col = document.createElement("div");
       col.classList.add("col-md-3");
 
-      const card = document.createElement("div");
+      const card = document.createElement("button");
       card.classList.add("card", "p-3");
-
+      
       const h6 = document.createElement("h6");
       h6.innerText = category.name;
-
-      card.appendChild(h6);
+      const p=document.createElement("p")
+      p.innerHTML=category._id
+      p.style.display="none"
+      card.appendChild(p)
+      card.appendChild(h6)
       col.appendChild(card);
       devEL.appendChild(col);
     });

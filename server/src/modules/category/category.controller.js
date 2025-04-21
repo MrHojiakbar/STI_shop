@@ -5,7 +5,6 @@ import {isValidObjectId} from "mongoose"
 export const AllCategories = async (req, res, next) => {
   try {
     console.log("keldi");
-    
     const categories = await categoryService.getAllCategories();
     res.send({
       message: "success",
