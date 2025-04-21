@@ -4,7 +4,15 @@ import productService from "./product.service.js";
 
 export const AllProducts = async (req, res, next) => {
   try {
-    const products = await productService.getAllProducts();
+    const { category_id } = req.query;
+    let filter={}
+    if(category_id=="68061c68ba6300d1f52080da"){
+      filter={}
+    }
+    else if (category_id) {
+      filter.category_id = category_id;
+    }
+    const products = await productService.getAllProducts(filter);
     res.send({
       message: "success",
       data: products,
@@ -38,7 +46,7 @@ export const createProduct = async (req, res, next) => {
     }
     const { name, description, price, quantity, category_id} =
       req.body;
-      console.log(req.user);
+    
       
     const user_id= req.user.id;
     const file = req.file;

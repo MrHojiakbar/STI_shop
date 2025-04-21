@@ -12,8 +12,8 @@ class ProductService{
         }
         return findProduct
     }
-    async getAllProducts() {
-        const findProduct=await this.productModel.find().populate("user_id").populate("category_id")
+    async getAllProducts(filter) {
+        const findProduct=await this.productModel.find(filter).populate("user_id").populate("category_id")
         return findProduct
     }
     async createProduct(data) {

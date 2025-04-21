@@ -5,6 +5,61 @@ const categoryBox = document.querySelector(".category-box");
 const userProf=document.querySelector(".userInfo")
 const newProductBtn=document.querySelector(".create")
 
+function getProductsByCategory(categoryId) {
+  customAxios.get(`/product?category_id=${categoryId}`)
+    .then(response => {
+      const productBox = document.querySelector(".product-box");
+      productBox.innerHTML = "";
+      const devEL = document.createElement("div");
+      devEL.classList.add("row");
+
+      response.data.data.forEach(product => {
+        const col = document.createElement("div");
+        col.classList.add("col-md-3");
+
+        const card = document.createElement("div");
+        card.classList.add("card", "p-3");
+
+        const img = document.createElement("img");
+        img.style.width = "200px";
+        img.style.height = "200px";
+        img.style.objectFit = "cover";
+        img.style.objectPosition = "center";
+        img.style.borderRadius = "10px";
+        img.style.margin = "0 auto";
+        img.src = "http://localhost:3000" + product.imageUrl;
+        img.classList.add("card-img-top");
+
+        const h5 = document.createElement("h5");
+        h5.classList.add("card-title");
+        h5.innerText = product.name;
+
+        const p = document.createElement("p");
+        p.classList.add("card-text");
+        p.innerText = `${product.price} so'm`;
+
+        const a = document.createElement("a");
+        a.href = "#";
+        a.classList.add("btn", "btn-primary");
+        a.innerText = "Batafsil";
+
+        card.appendChild(img);
+        card.appendChild(h5);
+        card.appendChild(p);
+        card.appendChild(a);
+
+        col.appendChild(card);
+        devEL.appendChild(col);
+      });
+
+      productBox.appendChild(devEL);
+    })
+    .catch(error => {
+      console.error('Xato:', error);
+    });
+}
+
+
 if (module.hot) {
   module.hot.accept();
 } // Bu cookie'larni ko'rsatadi
@@ -87,6 +142,9 @@ customAxios.get('/category/')
       card.appendChild(h6)
       col.appendChild(card);
       devEL.appendChild(col);
+      card.addEventListener("click", () => {
+        getProductsByCategory(category._id);
+      });
     });
 
     categoryBox.appendChild(devEL);
